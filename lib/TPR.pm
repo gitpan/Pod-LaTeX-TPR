@@ -1,11 +1,11 @@
-# $Id: TPR.pm,v 1.1.1.1 2002/11/06 03:45:17 comdog Exp $
+# $Id: TPR.pm,v 1.2 2002/11/06 04:08:26 comdog Exp $
 package Pod::LaTeX::TPR;
 
 use Pod::LaTeX;
 use base qw(Pod::LaTeX);
 use vars qw($VERSION);
 
-$VERSION = 0.05;
+$VERSION = 0.06;
 
 =head1 NAME
 

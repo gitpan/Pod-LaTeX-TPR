@@ -1,4 +1,4 @@
-# $Id: Makefile.PL,v 1.1.1.1 2002/11/06 03:45:17 comdog Exp $
+# $Id: Makefile.PL,v 1.2 2002/11/06 04:24:20 comdog Exp $
 use ExtUtils::MakeMaker;
 
 sub ExtUtils::MM_Any::test_via_harness
@@ -26,7 +26,7 @@ WriteMakefile
  			
         'PM'        => 
         	{
-            'lib/TPR.pm'     => '$(INST_LIBDIR)/Pod/LaTeX/TPR.pm',
+            'lib/TPR.pm'     => '$(INST_LIBDIR)/TPR.pm',
           },
  
          'MAN3PODS' =>

@@ -1,4 +1,8 @@
-# $Id: Changes,v 1.1.1.1 2002/11/06 03:45:17 comdog Exp $
+# $Id: Changes,v 1.2 2002/11/06 04:24:20 comdog Exp $
+
+0.06 - Tue Nov  5 22:09:11 CST 2002
+	+ added Code counter reset
+	+ fixed Makefile to install in right place
 
 0.05 - Tue Nov  5 21:31:23 CST 2002
 	+ first release
