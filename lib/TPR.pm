@@ -1,11 +1,11 @@
-# $Id: TPR.pm,v 1.4 2002/12/05 19:05:37 comdog Exp $
+# $Id: TPR.pm,v 1.6 2004/09/16 22:42:31 comdog Exp $
 package Pod::LaTeX::TPR;
 
 use Pod::LaTeX;
 use base qw(Pod::LaTeX);
 use vars qw($VERSION);
 
-$VERSION = sprintf "%2d.%02d", q$Revision: 1.4 $ =~ m/ (\d+) \. (\d+) /xg;
+$VERSION = sprintf "%2d.%02d", q$Revision: 1.6 $ =~ m/ (\d+) \. (\d+) /xg;
 
 =head1 NAME
 
@@ -51,14 +51,14 @@ L<Pod::LaTeX>, L<Pod::Parser>
 This source is part of a SourceForge project which always has the
 latest sources in CVS, as well as all of the previous releases.
 
-	https://sourceforge.net/projects/brian-d-foy/
+	http://sourceforge.net/projects/brian-d-foy/
 
 If, for some reason, I disappear from the world, one of the other
 members of the project can shepherd this module appropriately.
 
 =head1 AUTHOR
 
-brian d foy, E<lt>bdfoy@cpan.orgE<gt>
+brian d foy, C<< <bdfoy@cpan.org> >>
 
 =head1 COPYRIGHT
 
@@ -87,9 +87,8 @@ sub head
 		$level = $#LatexSections;
 		}
 
-	$paragraph = 'References' if $self->{_CURRENT_HEAD1} eq 'SEE ALSO';
-
-	return if $paragraph eq 'DESCRIPTION';
+	$paragraph = 'References'   if $self->{_CURRENT_HEAD1} eq 'SEE ALSO';
+	$paragraph = 'Introduction' if $self->{_CURRENT_HEAD1} eq 'DESCRIPTION';
 
 	$self->_output("\\" . $Pod::LaTeX::LatexSections[$level] . "{$paragraph}");
 	}
@@ -163,19 +162,34 @@ sub command
 	   if( $command eq 'over'  ) { $self->begin_list($paragraph, $line_num) }
 	elsif( $command eq 'item'  ) { $self->add_item($paragraph, $line_num)   }
 	elsif( $command eq 'back'  ) { $self->end_list($line_num)               }
-	elsif( $command eq 'head1' ) {
+	elsif( $command eq 'head1' )
+		{
 		$self->{_CURRENT_HEAD1} = $paragraph;
 		$self->head(1, $paragraph, $parobj);
 		}
 	elsif( $command =~ m/head(\d)/ ) { $self->head($1, $paragraph, $parobj) }
-	elsif( $command eq 'begin' ) {
-		if ($paragraph =~ /^latex/i)
-			{ $self->{_dont_modify_any_para} = 1 }
-		else { $self->{_suppress_all_para} = 1 }
+	elsif( $command eq 'begin' )
+		{
+		if( $paragraph =~ /^latex/i )
+			{
+			$self->{_dont_modify_any_para} = 1
+			}
+		elsif( $paragraph =~ /^code/i )
+			{
+			my @b = split /\s+/, $paragraph, 3;
+			$self->_output( "\\begin{code}{$b[1]}{$b[2]}\n" );
+
+			$self->{_dont_modify_any_para} = 1
+			}
+		else
+			{
+			$self->{_suppress_all_para} = 1
+			}
 		}
 	elsif( $command eq 'for' ) {
 		if ($paragraph =~ /^latex/i)
 			{
+			print STDERR "Command is $command, paragraph is [$paragraph]";
 			$self->{_dont_modify_next_para} = 1;
 			}
 		else
@@ -187,6 +201,11 @@ sub command
 		{
 		$self->{_suppress_all_para} = 0;
 		$self->{_dont_modify_any_para} = 0;
+
+		if( $paragraph =~ /^code/i )
+			{
+			$self->_output( "\\end{PerlCode}\n\\end{code}\n\n" );
+			}
 		}
 	else { warn "[$command] not recognised at line $line_num\n" }
 	}

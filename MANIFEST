@@ -4,4 +4,7 @@ Makefile.PL
 lib/TPR.pm
 t/load.t
 t/pod.t
+t/prereq.t
 t/test_manifest
+README
+META.yml
