@@ -1,11 +1,11 @@
-# $Id: TPR.pm,v 1.2 2002/11/06 04:08:26 comdog Exp $
+# $Id: TPR.pm,v 1.4 2002/12/05 19:05:37 comdog Exp $
 package Pod::LaTeX::TPR;
 
 use Pod::LaTeX;
 use base qw(Pod::LaTeX);
 use vars qw($VERSION);
 
-$VERSION = 0.06;
+$VERSION = sprintf "%2d.%02d", q$Revision: 1.4 $ =~ m/ (\d+) \. (\d+) /xg;
 
 =head1 NAME
 
@@ -15,9 +15,9 @@ Pod::LaTeX::TPR - Translate POD for The Perl Review
 
 	# same constructor for Pod::LaTeX
 	my $parser = Pod::LaTeX::TPR->new( ... );
-	
+
 	# same methods for Pod::LaTeX
-	
+
 =head1 DESCRIPTION
 
 The Pod::LaTeX module does a good job of translating POD to
@@ -28,7 +28,7 @@ do the same thing to get what you want by following this
 example.
 
 I also added some custom interior sequences (those XE<lt>E<gt>
-things.)  
+things.)
 
 =over 4
 
@@ -52,7 +52,7 @@ This source is part of a SourceForge project which always has the
 latest sources in CVS, as well as all of the previous releases.
 
 	https://sourceforge.net/projects/brian-d-foy/
-	
+
 If, for some reason, I disappear from the world, one of the other
 members of the project can shepherd this module appropriately.
 
@@ -74,12 +74,12 @@ sub head
 	my $num = shift;
 	my $paragraph = shift;
 	my $parobj = shift;
-	
+
 	return if $self->{_CURRENT_HEAD1} =~ /^(?:NAME|SYNOPSIS|AUTHOR)/i;
-		
+
 	my $level = $self->Head1Level() - 1 + $num;
-	
-	if ($num > $#Pod::LaTeX::LatexSections) 
+
+	if ($num > $#Pod::LaTeX::LatexSections)
 		{
 		my $line = $parobj->file_line;
 		my $file = $self->input_file;
@@ -88,36 +88,36 @@ sub head
 		}
 
 	$paragraph = 'References' if $self->{_CURRENT_HEAD1} eq 'SEE ALSO';
-	
+
 	return if $paragraph eq 'DESCRIPTION';
-	
+
 	$self->_output("\\" . $Pod::LaTeX::LatexSections[$level] . "{$paragraph}");
 	}
-	
-sub textblock 
+
+sub textblock
 	{
 	my $self = shift;
 	my ($paragraph, $line_num, $parobj) = @_;
 
-	if ($self->{_dont_modify_any_para} || $self->{_dont_modify_next_para}) 
+	if ($self->{_dont_modify_any_para} || $self->{_dont_modify_next_para})
 		{
 		$self->_output($paragraph);
 		$self->{_dont_modify_next_para} = 0;
 		return;
-		} 
-	
+		}
+
 	$paragraph = $self->_replace_special_chars($paragraph);
-	
+
 	my $expansion = $self->interpolate($paragraph, $line_num);
 	$expansion =~ s/\s+$//;
-	
-	
-	if( $self->{_CURRENT_HEAD1} =~ /^NAME/i ) 
+
+
+	if( $self->{_CURRENT_HEAD1} =~ /^NAME/i )
 		{
 		$paragraph =~ s/^\s+|\s+$//;
-		
+
 		$self->{_CURRENT_HEAD1} = '_NAME';
-	
+
 		$self->_output(<<"LATEX");
 \\title{$expansion}
 \\author{%%author%%}
@@ -128,7 +128,7 @@ sub textblock
 
 LATEX
 		}
-	elsif( $self->{_CURRENT_HEAD1} =~ /^SYNOPSIS/i ) 
+	elsif( $self->{_CURRENT_HEAD1} =~ /^SYNOPSIS/i )
 		{
 		$self->_output(<<"LATEX");
 \\begin{abstract}
@@ -140,71 +140,71 @@ LATEX
 	elsif(  $self->{_CURRENT_HEAD1} =~ /^AUTHOR/i )
 		{
 		$self->{_MY_AUTHOR} = $expansion;
-		} 
+		}
 	else
 		{
 		$self->_output("\n\n$expansion\n\n");
 		}
 	}
-	
-sub command 
+
+sub command
 	{
 	my $self = shift;
 	my ($command, $paragraph, $line_num, $parobj) = @_;
-	
+
 	return if $command eq 'pod';
-	
+
 	$paragraph = $self->_replace_special_chars($paragraph);
-	
+
 	$paragraph = $self->interpolate($paragraph, $line_num);
-	
+
 	$paragraph =~ s/\s+$//;
-	
-	   if( $command eq 'over'  ) { $self->begin_list($paragraph, $line_num) } 
-	elsif( $command eq 'item'  ) { $self->add_item($paragraph, $line_num)   } 
+
+	   if( $command eq 'over'  ) { $self->begin_list($paragraph, $line_num) }
+	elsif( $command eq 'item'  ) { $self->add_item($paragraph, $line_num)   }
 	elsif( $command eq 'back'  ) { $self->end_list($line_num)               }
 	elsif( $command eq 'head1' ) {
 		$self->{_CURRENT_HEAD1} = $paragraph;
 		$self->head(1, $paragraph, $parobj);
-		} 
-	elsif( $command =~ m/head(\d)/ ) { $self->head($1, $paragraph, $parobj) } 
+		}
+	elsif( $command =~ m/head(\d)/ ) { $self->head($1, $paragraph, $parobj) }
 	elsif( $command eq 'begin' ) {
-		if ($paragraph =~ /^latex/i) 
-			{ $self->{_dont_modify_any_para} = 1 } 
+		if ($paragraph =~ /^latex/i)
+			{ $self->{_dont_modify_any_para} = 1 }
 		else { $self->{_suppress_all_para} = 1 }
-		} 
+		}
 	elsif( $command eq 'for' ) {
-		if ($paragraph =~ /^latex/i) 
+		if ($paragraph =~ /^latex/i)
 			{
 			$self->{_dont_modify_next_para} = 1;
-			} 
-		else 
+			}
+		else
 			{
 			$self->{_suppress_next_para} = 1
 			}
-		} 
-	elsif( $command eq 'end' ) 
+		}
+	elsif( $command eq 'end' )
 		{
 		$self->{_suppress_all_para} = 0;
 		$self->{_dont_modify_any_para} = 0;
 		}
 	else { warn "[$command] not recognised at line $line_num\n" }
 	}
-	
-sub end_pod 
+
+sub end_pod
 	{
 	my $self = shift;
-		
+
 	$self->_output( $self->UserPostamble );
 	}
 
 sub interior_sequence
 	{
 	my $self = shift;
-	
+
 	my $command  = shift;
 	my $argument = shift;
-	
+
 	return do {
 		if( $command eq 'F' )
 			{
@@ -218,7 +218,7 @@ sub interior_sequence
 			{
 			$self->SUPER::interior_sequence( $command, $argument, @_ );
 			}
-		
+
 		};
 	}
 
