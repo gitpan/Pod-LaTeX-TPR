@@ -1,11 +1,12 @@
-# $Id: TPR.pm,v 1.6 2004/09/16 22:42:31 comdog Exp $
+# $Id: TPR.pm,v 1.7 2004/10/08 20:59:10 comdog Exp $
 package Pod::LaTeX::TPR;
+use strict;
 
 use Pod::LaTeX;
 use base qw(Pod::LaTeX);
 use vars qw($VERSION);
 
-$VERSION = sprintf "%2d.%02d", q$Revision: 1.6 $ =~ m/ (\d+) \. (\d+) /xg;
+$VERSION = sprintf "%2d.%02d", q$Revision: 1.7 $ =~ m/ (\d+) \. (\d+) /xg;
 
 =head1 NAME
 
@@ -84,7 +85,7 @@ sub head
 		my $line = $parobj->file_line;
 		my $file = $self->input_file;
 		warn "Heading level too large ($level) for LaTeX at line $line of file $file\n";
-		$level = $#LatexSections;
+		$level = $#Pod::LaTeX::LatexSections;
 		}
 
 	$paragraph = 'References'   if $self->{_CURRENT_HEAD1} eq 'SEE ALSO';

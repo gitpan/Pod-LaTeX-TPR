@@ -1,4 +1,7 @@
-# $Id: Changes,v 1.2 2002/11/06 04:24:20 comdog Exp $
+# $Id: Changes,v 1.3 2004/09/16 22:44:58 comdog Exp $
+
+1.06 - Thu Sep 16 17:44:47 2004
+* distro cleanups: no need to upgrade
 
 0.06 - Tue Nov  5 22:09:11 CST 2002
 	+ added Code counter reset
